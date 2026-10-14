@@ -1,0 +1,43 @@
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1024" height="1024" rx="190" fill="#791b49"/>
+
+  <!-- Two large crossing loops forming the heart lobes -->
+  <path
+    d="M 555 390
+       C 470 300 380 175 258 168
+       C 150 162 98 255 108 330
+       C 118 400 160 470 142 525
+       C 128 568 180 598 248 578
+       C 345 550 455 460 530 390
+       C 600 312 702 202 790 192
+       C 868 184 918 248 913 328
+       C 908 398 868 458 893 488
+       C 908 508 892 540 848 578
+       C 800 620 742 648 716 654"
+    fill="none"
+    stroke="#f7f1e7"
+    stroke-width="34"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Small inner loop + flowing flourish tail -->
+  <path
+    d="M 528 392
+       C 478 432 436 482 416 542
+       C 396 602 392 682 408 742
+       C 420 790 452 846 492 850
+       C 532 854 566 810 570 750
+       C 574 690 554 612 500 562
+       C 462 528 420 500 402 470
+       C 420 480 450 498 500 530
+       C 600 592 710 650 795 700
+       C 825 718 848 735 858 748
+       C 862 756 860 764 854 768"
+    fill="none"
+    stroke="#f7f1e7"
+    stroke-width="34"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

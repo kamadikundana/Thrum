@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thrum</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon.png">
+<meta name="theme-color" content="#f7f1e7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="brand">
+      <img class="brand-icon" src="icons/icon.png" alt="">
+      <span class="brand-word">THRUM</span>
+    </div>
+    <button class="icon-btn" data-page="page-profile" aria-label="Profile and settings">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
+  </header>
+
+  <main class="app">
+    <!-- ===================== HOME ===================== -->
+    <section class="tab-page active" id="page-home">
+      <div class="greeting">
+        <p class="greeting-date" id="greetingDate"></p>
+        <p class="greeting-headline" id="greetingHeadline">Ready for a reading?</p>
+      </div>
+
+      <div class="pulse-card">
+        <div class="pulse-card-label">
+          <svg viewBox="0 0 24 24" class="pulse-card-icon"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+          <span>Live pulse</span>
+        </div>
+        <div class="pulse-card-value"><span id="summaryHr">--</span> <small>bpm</small></div>
+        <canvas id="hrSparkline" class="sparkline" width="280" height="40"></canvas>
+        <p class="pulse-card-sub" id="summaryHrSub">Take a reading to see your resting range.</p>
+      </div>
+
+      <div class="pulse-card">
+        <div class="pulse-card-label">
+          <svg viewBox="0 0 24 24" class="pulse-card-icon"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg>
+          <span>PRV (rMSSD) &middot; Today</span>
+        </div>
+        <div class="pulse-card-value accent-2"><span id="summaryHrv">--</span> <small>ms</small></div>
+        <canvas id="hrvSparkline" class="sparkline accent-2" width="280" height="40"></canvas>
+        <p class="pulse-card-sub"><span id="summaryHrvTrend" class="summary-card-trend flat">no trend yet</span></p>
+      </div>
+
+      <section class="camera-section">
+        <video id="video" autoplay playsinline muted hidden></video>
+        <canvas id="canvas" hidden></canvas>
+        <button id="startBtn">Start Reading</button>
+        <button id="stopBtn" hidden>Stop</button>
+        <p id="status">Place your fingertip over the camera and flash.</p>
+      </section>
+
+      <section class="waveform-section">
+        <p class="waveform-label">Pulse signal — each bump is one heartbeat. Dots mark detected beats.</p>
+        <canvas id="waveform" width="600" height="150"></canvas>
+        <div id="signalMeter" class="signal-meter" hidden>
+          <span class="signal-meter-label">Signal strength</span>
+          <div class="signal-meter-track"><div id="signalMeterFill" class="signal-meter-fill"></div></div>
+        </div>
+        <p id="beatCount" class="beat-count"></p>
+        <p id="crossCheck" class="cross-check"></p>
+        <button id="beatMapToggleBtn" class="secondary-btn">View Beat Map</button>
+        <div id="beatMapPanel" class="beat-map-panel" hidden>
+          <p class="beat-map-intro">Every detected beat-to-beat interval, whether it was accepted or excluded, and why.</p>
+          <ul id="beatMapList" class="beat-map-list"></ul>
+        </div>
+      </section>
+
+      <section class="results-section" hidden id="results">
+        <div class="metric"><span id="hrValue">--</span><label>BPM</label></div>
+        <div class="metric"><span id="hrvValue">--</span><label>PRV: rMSSD (ms)</label></div>
+        <p id="flagMessage" class="flag"></p>
+        <button id="exportCsvBtn" class="secondary-btn" hidden>Export Raw Signal CSV</button>
+      </section>
+    </section>
+
+    <!-- ===================== TRENDS ===================== -->
+    <section class="tab-page" id="page-trends">
+      <h2 class="page-title">Trends</h2>
+
+      <section>
+        <h3 class="chart-title">Weekly PRV (rMSSD)</h3>
+        <canvas id="trendChart" width="600" height="200"></canvas>
+      </section>
+
+      <button class="list-row" type="button" disabled>
+        <svg viewBox="0 0 24 24" class="list-row-icon"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+        <div class="list-row-body">
+          <span class="list-row-title">Heart rate</span>
+          <span class="list-row-value"><span id="trendsHr">--</span> bpm</span>
+        </div>
+        <span class="list-row-trend" id="trendsHrTrend"></span>
+      </button>
+
+      <button class="list-row" type="button" disabled>
+        <svg viewBox="0 0 24 24" class="list-row-icon"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg>
+        <div class="list-row-body">
+          <span class="list-row-title">PRV (rMSSD)</span>
+          <span class="list-row-value"><span id="trendsHrv">--</span> ms</span>
+        </div>
+        <span class="list-row-trend" id="trendsHrvTrend"></span>
+      </button>
+
+      <h3 class="chart-title">Reading history</h3>
+      <ul id="historyList"></ul>
+    </section>
+
+    <!-- ===================== INSIGHTS ===================== -->
+    <section class="tab-page" id="page-insights">
+      <h2 class="page-title">Insights</h2>
+      <ul class="insights-list" id="insightsList"></ul>
+    </section>
+
+    <!-- ===================== PROFILE ===================== -->
+    <section class="tab-page" id="page-profile">
+      <h2 class="page-title">Profile</h2>
+
+      <section>
+        <h3 class="chart-title">Your data</h3>
+        <p class="profile-text">All readings are stored only on this device (browser local storage). Nothing is ever sent to a server.</p>
+        <button id="clearHistoryBtn" class="secondary-btn">Clear History</button>
+      </section>
+
+      <section>
+        <h3 class="chart-title">About Thrum</h3>
+        <p class="profile-text">Thrum is a camera-based heart rhythm screening aid built for the Congressional App Challenge. It measures pulse-rate variability (PRV) from your phone's camera and flash, and compares new readings against your own personal history rather than a fixed population threshold.</p>
+        <p class="profile-text"><strong>Not a medical device.</strong> Always consult a doctor for diagnosis.</p>
+      </section>
+    </section>
+
+    <footer>
+      <p class="disclaimer">This is a student screening aid, not a medical device. Always consult a doctor for diagnosis.</p>
+    </footer>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-page="page-home">
+      <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+      Home
+    </button>
+    <button class="nav-btn" data-page="page-trends">
+      <svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-9"/><path d="M14 6h7v7"/></svg>
+      Trends
+    </button>
+    <button class="nav-btn" data-page="page-insights">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M9 15c.8.7 1.8 1 3 1s2.2-.3 3-1"/></svg>
+      Insights
+    </button>
+    <button class="nav-btn" data-page="page-profile">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      Profile
+    </button>
+  </nav>
+
+  <script src="js/camera.js?v=18"></script>
+  <script src="js/signal.js?v=18"></script>
+  <script src="js/baseline.js?v=18"></script>
+  <script src="js/storage.js?v=18"></script>
+  <script src="js/insights.js?v=18"></script>
+  <script src="js/nav.js?v=18"></script>
+  <script src="js/app.js?v=18"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js").catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

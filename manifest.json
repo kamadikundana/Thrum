@@ -1,0 +1,19 @@
+{
+  "name": "Thrum",
+  "short_name": "Thrum",
+  "description": "Your rhythm, understood. Camera-based heart rhythm screening with a personal baseline.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f1e7",
+  "theme_color": "#f7f1e7",
+  "icons": [
+    {
+      "src": "icons/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
